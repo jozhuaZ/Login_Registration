@@ -25,7 +25,7 @@
     <h1>Sign In</h1>
     <form action="sign_in.php" method="post" class="poppins-default">
         <label>Email/Username</label>
-        <input id="email" type="email" name="email" required>
+        <input id="login" type="text" name="login" required>
         
         <label>Password</label>
         <input id="password" type="password" name="password" required>

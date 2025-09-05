@@ -6,12 +6,13 @@ include ('../Database/connection.php');
 $conn = connect();
 
 // set variables from Sign In form
-$email = $_POST['email'] ?? null;
+$login = $_POST['login'] ?? null;
 $password = $_POST['password'] ?? null;
 
-if (!$email || !$password) {
+if (!$login || !$password) {
     // redirect to index.php
-    header('Location: index.php?error=insufficient_inputs');
+    $_SESSION['flash_error'] = 'Please fill in all credential fields to proceed.';
+    header('Location: index.php');
     exit;
 }
 
@@ -24,9 +25,9 @@ try {
         exit;
     }
 
-    $query = "SELECT * FROM user WHERE email = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->execute([$email]);
+    $query = "SELECT * FROM user WHERE email = :login OR username = :login LIMIT 1";
+    $stmt  = $conn->prepare($query);
+    $stmt->execute([':login' => $login]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // no existing user with the input email
@@ -46,6 +47,7 @@ try {
     }
 
     // set user info on session
+    session_regenerate_id(true);
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['email'] = $user['email'];
