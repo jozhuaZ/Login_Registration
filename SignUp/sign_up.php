@@ -42,6 +42,15 @@ try {
         exit;
     }
 
+    // check if email or username already exists
+    $check = $conn->prepare("SELECT id FROM user WHERE email = ? OR username = ?");
+    $check->execute([$email, $username]);
+    if ($check->fetch()) {
+        $_SESSION['flash_error'] = 'Email or Username already exists.';
+        header('Location: index.php');
+        exit;
+    }
+
     // hash the password for security
     $hashPassword = password_hash($password, PASSWORD_DEFAULT);
 
