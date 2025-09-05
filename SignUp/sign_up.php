@@ -45,14 +45,14 @@ try {
     // check if email, username or contact_number already exists
     $check = $conn->prepare("SELECT email, username, contact_number FROM user WHERE email = ? OR username = ? OR contact_number = ?");
     $check->execute([$email, $username, $contact_number]);
-    $existing = $check->fetch(PDO::FETCH_ASSOC);
+    $existingUser = $check->fetch(PDO::FETCH_ASSOC);
 
-    if ($existing) {
-        if ($existing['email'] === $email) {
+    if ($existingUser) {
+        if ($existingUser['email'] === $email) {
             $_SESSION['flash_error'] = 'Email already exists.';
-        } elseif ($existing['username'] === $username) {
+        } elseif ($existingUser['username'] === $username) {
             $_SESSION['flash_error'] = 'Username already exists.';
-        } else if ($existing['contact_number'] === $contact_number) {
+        } else if ($existingUser['contact_number'] === $contact_number) {
             $_SESSION['flash_error'] = 'Contact Number already exists.';
         }
         header('Location: index.php');
