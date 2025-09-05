@@ -42,11 +42,19 @@ try {
         exit;
     }
 
-    // check if email or username already exists
-    $check = $conn->prepare("SELECT id FROM user WHERE email = ? OR username = ?");
-    $check->execute([$email, $username]);
-    if ($check->fetch()) {
-        $_SESSION['flash_error'] = 'Email or Username already exists.';
+    // check if email, username or contact_number already exists
+    $check = $conn->prepare("SELECT email, username, contact_number FROM user WHERE email = ? OR username = ? OR contact_number = ?");
+    $check->execute([$email, $username, $contact_number]);
+    $existing = $check->fetch(PDO::FETCH_ASSOC);
+
+    if ($existing) {
+        if ($existing['email'] === $email) {
+            $_SESSION['flash_error'] = 'Email already exists.';
+        } elseif ($existing['username'] === $username) {
+            $_SESSION['flash_error'] = 'Username already exists.';
+        } else if ($existing['contact_number'] === $contact_number) {
+            $_SESSION['flash_error'] = 'Contact Number already exists.';
+        }
         header('Location: index.php');
         exit;
     }
@@ -63,6 +71,7 @@ try {
 
         $userId = $conn->lastInsertId();
         // set user info on session
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $userId;
         $_SESSION['username'] = $username;
         $_SESSION['email'] = $email;
